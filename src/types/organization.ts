@@ -1,0 +1,10 @@
+export type OrganizationStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'DELETED';
+
+export interface Organization {
+  id: number;
+  name: string;
+  slug: string;
+  status: OrganizationStatus;
+  createdAt: string;
+  updatedAt: string;
+}
