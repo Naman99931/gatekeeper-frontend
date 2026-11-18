@@ -13,8 +13,8 @@ export function RequireRole({
 }) {
   const { user, isInitializing } = useAuth();
   const router = useRouter();
-  const allowed = user?.roles?.includes(role);
-
+  const allowed = user?.role === role;
+  
   useEffect(() => {
     if (!isInitializing && !allowed) {
       router.replace('/users');
