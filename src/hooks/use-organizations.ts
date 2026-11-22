@@ -19,3 +19,11 @@ export function useCreateOrganization() {
     },
   });
 }
+
+export function useOrganization(id: number) {
+  return useQuery({
+    queryKey: ['organizations', id],
+    queryFn: () => organizationApi.getById(id),
+    enabled: !!id,
+  });
+}

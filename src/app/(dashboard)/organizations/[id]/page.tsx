@@ -1,0 +1,152 @@
+'use client';
+
+import { use } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Building2, Calendar, Hash, Tag } from 'lucide-react';
+import { ProtectedRoute } from '@/components/auth/protected-route';
+import { RequireRole } from '@/components/auth/require-role';
+import { AppShell } from '@/components/layout/app-shell';
+import { useOrganization } from '@/hooks/use-organizations';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import type { OrganizationStatus } from '@/types/organization';
+
+const statusToneMap: Record<
+  OrganizationStatus,
+  'neutral' | 'success' | 'danger'
+> = {
+  ACTIVE: 'success',
+  PENDING: 'neutral',
+  SUSPENDED: 'danger',
+  DELETED: 'neutral',
+};
+
+export default function OrganizationDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = use(params);
+  const orgId = Number(resolvedParams.id);
+
+  return (
+    <ProtectedRoute>
+      <RequireRole role="PLATFORM_ADMIN">
+        <AppShell>
+          <OrganizationDetailsContent id={orgId} />
+        </AppShell>
+      </RequireRole>
+    </ProtectedRoute>
+  );
+}
+
+function OrganizationDetailsContent({ id }: { id: number }) {
+  const { data: org, isLoading, error } = useOrganization(id);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner label="Loading organization details..." />
+      </div>
+    );
+  }
+
+  if (error || !org) {
+    return (
+      <div className="space-y-4 p-6">
+        <div className="rounded-md bg-danger/10 p-4 text-sm text-danger">
+          Failed to load organization details. Organization may not exist.
+        </div>
+        <Link href="/organizations">
+          <Button variant="secondary" size="sm">
+            <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Organizations
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 p-6">
+      {/* Top Bar with Back Button */}
+      <div className="flex items-center gap-3">
+        <Link href="/organizations">
+          <Button variant="secondary" size="sm" className="h-8 w-8 p-0">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-text-primary">
+            {org.name}
+          </h1>
+          <p className="text-xs text-text-secondary">Organization ID: {org.id}</p>
+        </div>
+        <div className="ml-auto">
+          <Badge tone={statusToneMap[org.status] || 'neutral'}>
+            {org.status}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Overview Cards */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-4 rounded-lg border border-border bg-surface p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+            General Information
+          </h2>
+          <div className="divide-y divide-border text-sm">
+            <div className="flex justify-between py-2.5">
+              <span className="flex items-center gap-2 text-text-secondary">
+                <Hash className="h-4 w-4" /> ID
+              </span>
+              <span className="font-mono text-text-primary">{org.id}</span>
+            </div>
+            <div className="flex justify-between py-2.5">
+              <span className="flex items-center gap-2 text-text-secondary">
+                <Building2 className="h-4 w-4" /> Name
+              </span>
+              <span className="font-medium text-text-primary">{org.name}</span>
+            </div>
+            <div className="flex justify-between py-2.5">
+              <span className="flex items-center gap-2 text-text-secondary">
+                <Tag className="h-4 w-4" /> Slug
+              </span>
+              <span className="font-mono text-text-primary">{org.slug}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-lg border border-border bg-surface p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+            Timestamps & Status
+          </h2>
+          <div className="divide-y divide-border text-sm">
+            <div className="flex justify-between py-2.5">
+              <span className="text-text-secondary">Status</span>
+              <Badge tone={statusToneMap[org.status] || 'neutral'}>
+                {org.status}
+              </Badge>
+            </div>
+            <div className="flex justify-between py-2.5">
+              <span className="flex items-center gap-2 text-text-secondary">
+                <Calendar className="h-4 w-4" /> Created At
+              </span>
+              <span className="text-text-secondary">
+                {new Date(org.createdAt).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between py-2.5">
+              <span className="flex items-center gap-2 text-text-secondary">
+                <Calendar className="h-4 w-4" /> Last Updated
+              </span>
+              <span className="text-text-secondary">
+                {new Date(org.updatedAt).toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

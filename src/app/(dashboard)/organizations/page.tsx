@@ -64,7 +64,6 @@ function OrganizationsContent() {
 
       {!organizations || organizations.length === 0 ? (
         <EmptyState
-          icon={Building2}
           title="No organizations found"
           description="There are currently no registered organizations on the platform."
         />
