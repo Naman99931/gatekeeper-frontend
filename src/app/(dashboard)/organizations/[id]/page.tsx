@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EditOrganizationModal } from '@/components/organizations/edit-organization-modal';
 import { CreateTenantAdminModal } from '@/components/organizations/create-tenant-admin-modal';
+import { EditTenantAdminModal } from '@/components/organizations/edit-tenant-admin-modal';
 import { OrganizationStatusDropdown } from '@/components/organizations/organization-status-dropdown';
 import type { OrganizationStatus } from '@/types/organization';
 
@@ -49,6 +50,7 @@ function OrganizationDetailsContent({ id }: { id: number }) {
   const { data: tenantAdmin, isLoading: isTenantLoading } = useTenantAdmin(id);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
+  const [isEditAdminOpen, setIsEditAdminOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -167,7 +169,7 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
             Tenant Administrator
           </h2>
-          {!tenantAdmin && !isTenantLoading && (
+          {!tenantAdmin && !isTenantLoading ? (
             <Button
               variant="secondary"
               size="sm"
@@ -177,7 +179,17 @@ function OrganizationDetailsContent({ id }: { id: number }) {
               <UserPlus className="h-3.5 w-3.5" />
               Assign Tenant Admin
             </Button>
-          )}
+          ) : tenantAdmin ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsEditAdminOpen(true)}
+              className="flex items-center gap-1.5"
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+          ) : null}
         </div>
 
         {isTenantLoading ? (
@@ -248,6 +260,15 @@ function OrganizationDetailsContent({ id }: { id: number }) {
         open={isCreateAdminOpen}
         onClose={() => setIsCreateAdminOpen(false)}
       />
+
+      {tenantAdmin && (
+        <EditTenantAdminModal
+          organizationId={org.id}
+          tenantAdmin={tenantAdmin}
+          open={isEditAdminOpen}
+          onClose={() => setIsEditAdminOpen(false)}
+        />
+      )}
     </div>
   );
 }

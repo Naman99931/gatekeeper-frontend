@@ -51,4 +51,15 @@ export const organizationApi = {
     );
     return data;
   },
+
+  updateTenantAdmin: async (
+    organizationId: number,
+    payload: import('@/types/organization').UpdateTenantAdminRequest
+  ): Promise<TenantAdmin> => {
+    const { data } = await apiClient.put<TenantAdmin>(
+      `/platform/organizations/updateTenant/${organizationId}`,
+      payload
+    );
+    return data;
+  },
 };

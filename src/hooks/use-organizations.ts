@@ -77,3 +77,19 @@ export function useCreateTenantAdmin() {
     },
   });
 }
+
+export function useUpdateTenantAdmin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      organizationId,
+      payload,
+    }: {
+      organizationId: number;
+      payload: import('@/types/organization').UpdateTenantAdminRequest;
+    }) => organizationApi.updateTenantAdmin(organizationId, payload),
+    onSuccess: (_, { organizationId }) => {
+      queryClient.invalidateQueries({ queryKey: ['organizations', organizationId, 'tenant'] });
+    },
+  });
+}

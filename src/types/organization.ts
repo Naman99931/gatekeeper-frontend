@@ -33,3 +33,9 @@ export interface CreateTenantAdminRequest {
   passwordHash: string;
   enabled?: boolean;
 }
+
+export interface UpdateTenantAdminRequest {
+  username: string;
+  passwordHash: string;
+  enabled: boolean;
+}
