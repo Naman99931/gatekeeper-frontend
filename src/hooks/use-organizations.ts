@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { organizationApi } from '@/lib/api/organizations';
-import { CreateOrganizationRequest } from '@/types/organization';
+import { CreateOrganizationRequest, UpdateOrganizationRequest } from '@/types/organization';
 
 export function useOrganizations() {
   return useQuery({
@@ -16,6 +16,19 @@ export function useCreateOrganization() {
     onSuccess: () => {
       // Refresh the organizations list automatically
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
+    },
+  });
+}
+
+export function useUpdateOrganization() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UpdateOrganizationRequest }) =>
+      organizationApi.update(id, payload),
+    onSuccess: (_, { id }) => {
+      // Invalidate both the list and the individual organization query
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['organizations', id] });
     },
   });
 }

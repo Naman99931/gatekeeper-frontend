@@ -13,3 +13,5 @@ export interface CreateOrganizationRequest {
   name: string;
   slug: string;
 }
+
+export type UpdateOrganizationRequest = CreateOrganizationRequest;

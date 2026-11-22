@@ -1,8 +1,8 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Building2, Calendar, Hash, Tag } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar, Edit2, Hash, Tag } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { RequireRole } from '@/components/auth/require-role';
 import { AppShell } from '@/components/layout/app-shell';
@@ -10,6 +10,7 @@ import { useOrganization } from '@/hooks/use-organizations';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EditOrganizationModal } from '@/components/organizations/edit-organization-modal';
 import type { OrganizationStatus } from '@/types/organization';
 
 const statusToneMap: Record<
@@ -43,6 +44,7 @@ export default function OrganizationDetailsPage({
 
 function OrganizationDetailsContent({ id }: { id: number }) {
   const { data: org, isLoading, error } = useOrganization(id);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -82,10 +84,16 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           </h1>
           <p className="text-xs text-text-secondary">Organization ID: {org.id}</p>
         </div>
-        <div className="ml-auto">
-          <Badge tone={statusToneMap[org.status] || 'neutral'}>
-            {org.status}
-          </Badge>
+        <div className="ml-auto flex items-center gap-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setIsEditOpen(true)}
+            className="flex items-center gap-1.5"
+          >
+            <Edit2 className="h-3.5 w-3.5" />
+            Edit
+          </Button>
         </div>
       </div>
 
@@ -147,6 +155,12 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           </div>
         </div>
       </div>
+
+      <EditOrganizationModal
+        organization={org}
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
     </div>
   );
 }
