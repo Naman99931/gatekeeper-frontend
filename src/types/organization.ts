@@ -15,3 +15,21 @@ export interface CreateOrganizationRequest {
 }
 
 export type UpdateOrganizationRequest = CreateOrganizationRequest;
+
+export interface TenantAdmin {
+  id: number;
+  username: string;
+  enabled: boolean;
+  role?: {
+    id: number;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTenantAdminRequest {
+  username: string;
+  passwordHash: string;
+  enabled?: boolean;
+}

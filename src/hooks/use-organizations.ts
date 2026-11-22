@@ -52,3 +52,28 @@ export function useOrganization(id: number) {
     enabled: !!id,
   });
 }
+
+export function useTenantAdmin(organizationId: number) {
+  return useQuery({
+    queryKey: ['organizations', organizationId, 'tenant'],
+    queryFn: () => organizationApi.getTenantAdmin(organizationId),
+    enabled: !!organizationId,
+    retry: false,
+  });
+}
+
+export function useCreateTenantAdmin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      organizationId,
+      payload,
+    }: {
+      organizationId: number;
+      payload: import('@/types/organization').CreateTenantAdminRequest;
+    }) => organizationApi.createTenantAdmin(organizationId, payload),
+    onSuccess: (_, { organizationId }) => {
+      queryClient.invalidateQueries({ queryKey: ['organizations', organizationId, 'tenant'] });
+    },
+  });
+}

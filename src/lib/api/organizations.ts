@@ -1,5 +1,12 @@
 import { apiClient } from './client';
-import type { CreateOrganizationRequest, Organization, OrganizationStatus, UpdateOrganizationRequest } from '@/types/organization';
+import type {
+  CreateOrganizationRequest,
+  CreateTenantAdminRequest,
+  Organization,
+  OrganizationStatus,
+  TenantAdmin,
+  UpdateOrganizationRequest,
+} from '@/types/organization';
 
 export const organizationApi = {
   getAll: async (): Promise<Organization[]> => {
@@ -26,6 +33,22 @@ export const organizationApi = {
     const { data } = await apiClient.patch<Organization>(`/platform/organizations/${id}/status`, {
       status,
     });
+    return data;
+  },
+
+  getTenantAdmin: async (organizationId: number): Promise<TenantAdmin> => {
+    const { data } = await apiClient.get<TenantAdmin>(`/platform/organizations/${organizationId}/tenant`);
+    return data;
+  },
+
+  createTenantAdmin: async (
+    organizationId: number,
+    payload: CreateTenantAdminRequest
+  ): Promise<TenantAdmin> => {
+    const { data } = await apiClient.post<TenantAdmin>(
+      `/platform/organizations/createTenant?organizationId=${organizationId}`,
+      payload
+    );
     return data;
   },
 };
