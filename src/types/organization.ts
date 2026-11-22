@@ -8,3 +8,8 @@ export interface Organization {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateOrganizationRequest {
+  name: string;
+  slug: string;
+}

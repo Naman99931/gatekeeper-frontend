@@ -7,7 +7,10 @@ import { useOrganizations } from '@/hooks/use-organizations';
 import { OrganizationTable } from '@/components/organizations/organization-table';
 import { Spinner } from '@/components/ui/spinner';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Building2 } from 'lucide-react';
+import { Building2, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CreateOrganizationModal } from '@/components/organizations/create-organization-modal';
 
 export default function OrganizationsPage() {
   return (
@@ -23,6 +26,7 @@ export default function OrganizationsPage() {
 
 function OrganizationsContent() {
   const { data: organizations, isLoading, error } = useOrganizations();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -51,6 +55,11 @@ function OrganizationsContent() {
             Manage all platform tenant organizations
           </p>
         </div>
+
+      <Button onClick={() => setIsCreateOpen(true)} className="flex items-center gap-1.5">
+        <Plus className="h-4 w-4" />
+        Create Organization
+      </Button>
       </div>
 
       {!organizations || organizations.length === 0 ? (
@@ -62,6 +71,11 @@ function OrganizationsContent() {
       ) : (
         <OrganizationTable organizations={organizations} />
       )}
+
+      <CreateOrganizationModal
+        open={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+      />
     </div>
   );
 }
