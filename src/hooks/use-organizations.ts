@@ -33,6 +33,18 @@ export function useUpdateOrganization() {
   });
 }
 
+export function useUpdateOrganizationStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: number; status: import('@/types/organization').OrganizationStatus }) =>
+      organizationApi.updateStatus(id, status),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['organizations', id] });
+    },
+  });
+}
+
 export function useOrganization(id: number) {
   return useQuery({
     queryKey: ['organizations', id],

@@ -11,6 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EditOrganizationModal } from '@/components/organizations/edit-organization-modal';
+import { OrganizationStatusDropdown } from '@/components/organizations/organization-status-dropdown';
 import type { OrganizationStatus } from '@/types/organization';
 
 const statusToneMap: Record<
@@ -132,9 +133,10 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           <div className="divide-y divide-border text-sm">
             <div className="flex justify-between py-2.5">
               <span className="text-text-secondary">Status</span>
-              <Badge tone={statusToneMap[org.status] || 'neutral'}>
-                {org.status}
-              </Badge>
+              <OrganizationStatusDropdown
+                organizationId={org.id}
+                currentStatus={org.status}
+              />
             </div>
             <div className="flex justify-between py-2.5">
               <span className="flex items-center gap-2 text-text-secondary">

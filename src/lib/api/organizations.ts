@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { CreateOrganizationRequest, Organization, UpdateOrganizationRequest } from '@/types/organization';
+import type { CreateOrganizationRequest, Organization, OrganizationStatus, UpdateOrganizationRequest } from '@/types/organization';
 
 export const organizationApi = {
   getAll: async (): Promise<Organization[]> => {
@@ -19,6 +19,13 @@ export const organizationApi = {
 
   update: async (id: number, payload: UpdateOrganizationRequest): Promise<Organization> => {
     const { data } = await apiClient.put<Organization>(`/platform/organizations/${id}`, payload);
+    return data;
+  },
+
+  updateStatus: async (id: number, status: OrganizationStatus): Promise<Organization> => {
+    const { data } = await apiClient.patch<Organization>(`/platform/organizations/${id}/status`, {
+      status,
+    });
     return data;
   },
 };
