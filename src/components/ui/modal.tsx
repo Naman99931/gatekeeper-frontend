@@ -7,11 +7,13 @@ export function Modal({
   open,
   onClose,
   title,
+  size = 'md',
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
 }) {
   useEffect(() => {
@@ -24,9 +26,16 @@ export function Modal({
 
   if (!open) return null;
 
+  const sizeClasses = {
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-xl',
+    xl: 'max-w-2xl',
+  }[size];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-lg border border-border bg-white p-6 shadow-lg">
+      <div className={`w-full ${sizeClasses} rounded-lg border border-border bg-white p-6 shadow-lg`}>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-text-primary">{title}</h2>
           <button
