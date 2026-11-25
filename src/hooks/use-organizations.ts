@@ -33,6 +33,16 @@ export function useUpdateOrganization() {
   });
 }
 
+export function useDeleteOrganization() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => organizationApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
+    },
+  });
+}
+
 export function useUpdateOrganizationStatus() {
   const queryClient = useQueryClient();
   return useMutation({

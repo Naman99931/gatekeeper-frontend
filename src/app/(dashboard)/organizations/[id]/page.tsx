@@ -2,19 +2,23 @@
 
 import { use, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Building2, Calendar, CheckCircle2, Edit2, Hash, Shield, Tag, UserCheck, UserPlus, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { ArrowLeft, Building2, Calendar, CheckCircle2, Edit2, Hash, Shield, Tag, Trash2, UserCheck, UserPlus, XCircle } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { RequireRole } from '@/components/auth/require-role';
 import { AppShell } from '@/components/layout/app-shell';
-import { useOrganization, useTenantAdmin } from '@/hooks/use-organizations';
+import { useDeleteOrganization, useOrganization, useTenantAdmin } from '@/hooks/use-organizations';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Modal } from '@/components/ui/modal';
 import { EditOrganizationModal } from '@/components/organizations/edit-organization-modal';
 import { CreateTenantAdminModal } from '@/components/organizations/create-tenant-admin-modal';
 import { EditTenantAdminModal } from '@/components/organizations/edit-tenant-admin-modal';
 import { OrganizationStatusDropdown } from '@/components/organizations/organization-status-dropdown';
 import type { OrganizationStatus } from '@/types/organization';
+import type { ApiError } from '@/lib/api/client';
 
 const statusToneMap: Record<
   OrganizationStatus,
@@ -46,11 +50,25 @@ export default function OrganizationDetailsPage({
 }
 
 function OrganizationDetailsContent({ id }: { id: number }) {
+  const router = useRouter();
   const { data: org, isLoading, error } = useOrganization(id);
   const { data: tenantAdmin, isLoading: isTenantLoading } = useTenantAdmin(id);
+  const { mutateAsync: deleteOrg, isPending: isDeleting } = useDeleteOrganization();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
   const [isEditAdminOpen, setIsEditAdminOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteOrg(id);
+      toast.success('Organization deleted successfully');
+      router.push('/organizations');
+    } catch (err) {
+      const apiErr = err as ApiError;
+      toast.error(apiErr.message || 'Failed to delete organization');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -99,6 +117,15 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           >
             <Edit2 className="h-3.5 w-3.5" />
             Edit
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => setIsDeleteOpen(true)}
+            className="flex items-center gap-1.5"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Delete
           </Button>
         </div>
       </div>
@@ -269,6 +296,38 @@ function OrganizationDetailsContent({ id }: { id: number }) {
           onClose={() => setIsEditAdminOpen(false)}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        title="Delete Organization"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-text-secondary">
+            Are you sure you want to delete <strong className="text-text-primary font-semibold">{org.name}</strong>?
+            This will mark the organization as deleted.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsDeleteOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              onClick={handleDelete}
+              loading={isDeleting}
+            >
+              Delete Organization
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

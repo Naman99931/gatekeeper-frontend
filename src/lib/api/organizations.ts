@@ -36,6 +36,10 @@ export const organizationApi = {
     return data;
   },
 
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/platform/organizations/${id}`);
+  },
+
   getTenantAdmin: async (organizationId: number): Promise<TenantAdmin> => {
     const { data } = await apiClient.get<TenantAdmin>(`/platform/organizations/${organizationId}/tenant`);
     return data;
