@@ -103,3 +103,21 @@ export function useUpdateTenantAdmin() {
     },
   });
 }
+
+export function useOwnOrganization() {
+  return useQuery({
+    queryKey: ['tenant-organization'],
+    queryFn: organizationApi.getOwnOrganization,
+  });
+}
+
+export function useUpdateOwnOrganization() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: import('@/types/organization').UpdateTenantOrganizationRequest) =>
+      organizationApi.updateOwnOrganization(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenant-organization'] });
+    },
+  });
+}

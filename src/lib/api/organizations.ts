@@ -66,4 +66,16 @@ export const organizationApi = {
     );
     return data;
   },
+
+  getOwnOrganization: async (): Promise<Organization> => {
+    const { data } = await apiClient.get<Organization>('/tenant/organizations');
+    return data;
+  },
+
+  updateOwnOrganization: async (
+    payload: import('@/types/organization').UpdateTenantOrganizationRequest
+  ): Promise<Organization> => {
+    const { data } = await apiClient.put<Organization>('/tenant/organizations', payload);
+    return data;
+  },
 };

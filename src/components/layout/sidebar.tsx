@@ -27,6 +27,12 @@ export function Sidebar() {
       icon: Network,
       visible: isTenantAdmin,
     },
+    {
+      href: '/manage-organization',
+      label: 'Manage Organization',
+      icon: Building2,
+      visible: isTenantAdmin,
+    },
   ];
 
   return (

@@ -39,3 +39,7 @@ export interface UpdateTenantAdminRequest {
   passwordHash: string;
   enabled: boolean;
 }
+
+export interface UpdateTenantOrganizationRequest {
+  name: string;
+}
